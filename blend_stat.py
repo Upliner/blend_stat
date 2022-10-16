@@ -68,6 +68,8 @@ def stat_file(f):
     for btype, size, addr, sdna_index, cnt in blocks:
         if sdna_index > 0:
             typ = sdna[sdna_index]
+        elif btype != b"DATA":
+            typ = btype.strip(b'\0').decode("ascii")
         stat_item = stats_sdna.get(typ, [0, 0, 0])
         stat_item[0] += size+bstruct.size
         stat_item[1] += cnt
