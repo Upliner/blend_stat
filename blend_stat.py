@@ -4,6 +4,7 @@ import os, sys, struct
 
 bstruct = struct.Struct("<4sIQII")
 
+sdna = False
 verbose = False
 
 def read_str_arr(name, data):
@@ -30,13 +31,13 @@ def read_sdna(data):
     cnt, = struct.unpack("<I", data[:4])
     data = data[4:]
     result = []
-    if verbose:
+    if sdna:
         print()
     for i in range(cnt):
         typ, field_cnt = struct.unpack("<HH", data[:4])
         typ_name = types[typ].decode("ascii")
         result.append(typ_name)
-        if verbose:
+        if sdna:
             print(typ_name)
             data = data[4:]
             for i in range(field_cnt):
@@ -117,14 +118,14 @@ def stat_file(f):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: blend_stat.py [-v] file.blend")
+        print("Usage: blend_stat.py [-sdna] [-v] file.blend")
         quit(1)
 
-    if len(sys.argv) > 2 and sys.argv[1] == "-v":
-        verbose = True
-        filename = sys.argv[2]
-    else:
-        filename = sys.argv[1]
+    for arg in sys.argv[1:-1]:
+       if arg == "-v":
+           verbose = True
+       elif arg == "-sdna":
+           sdna = True
 
-    with open(filename, "rb") as f:
+    with open(sys.argv[-1], "rb") as f:
        stat_file(f)
