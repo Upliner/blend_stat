@@ -30,10 +30,21 @@ def read_sdna(data):
     cnt, = struct.unpack("<I", data[:4])
     data = data[4:]
     result = []
+    if verbose:
+        print()
     for i in range(cnt):
         typ, field_cnt = struct.unpack("<HH", data[:4])
-        result.append(types[typ].decode("ascii"))
-        data = data[4+4*field_cnt:]
+        typ_name = types[typ].decode("ascii")
+        result.append(typ_name)
+        if verbose:
+            print(typ_name)
+            data = data[4:]
+            for i in range(field_cnt):
+                ftyp, name = struct.unpack("<HH", data[:4])
+                print("    "+names[name].decode("ascii"), types[ftyp].decode("ascii"))
+                data = data[4:]
+        else:
+            data = data[4+4*field_cnt:]
     return result
 
 def stat_file(f):
@@ -65,6 +76,8 @@ def stat_file(f):
     stats_blk = {}
     typ = sdna[0]
     btyp = ""
+    if verbose:
+        print()
     for btype, size, addr, sdna_index, cnt in blocks:
         if sdna_index > 0:
             typ = sdna[sdna_index]
